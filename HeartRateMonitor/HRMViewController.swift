@@ -53,7 +53,7 @@ extension HRMViewController: CBCentralManagerDelegate{
   }
   func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
     print("Connected!")
-    heartRatePeripheral.discoverServices(nil)
+    heartRatePeripheral.discoverServices([heartRateServiceCBUUID])
   }
 }
 
@@ -63,6 +63,15 @@ extension HRMViewController: CBPeripheralDelegate {
     
     for service in services {
       print(service)
+      peripheral.discoverCharacteristics(nil, for: service)
+    }
+  }
+  func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService,
+                  error: Error?) {
+    guard let characteristics = service.characteristics else { return }
+
+    for characteristic in characteristics {
+      print(characteristic)
     }
   }
 }
