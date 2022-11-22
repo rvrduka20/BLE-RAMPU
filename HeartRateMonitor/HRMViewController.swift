@@ -80,6 +80,7 @@ extension HRMViewController: CBPeripheralDelegate {
       }
       if characteristic.properties.contains(.notify) {
         print("\(characteristic.uuid): properties contains .notify")
+        peripheral.setNotifyValue(true, for: characteristic)
       }
     }
   }
@@ -90,6 +91,9 @@ extension HRMViewController: CBPeripheralDelegate {
       case bodySensorLocationCharacteristicCBUUID:
         let bodySensorLocation = bodyLocation(from: characteristic)
         bodySensorLocationLabel.text = bodySensorLocation
+      case heartRateMeasurementCharacteristicCBUUID:
+        let bpm = heartRate(from: characteristic)
+        onHeartRateReceived(bpm)
       default:
         print("Unhandled Characteristic UUID: \(characteristic.uuid)")
     }
@@ -109,6 +113,19 @@ extension HRMViewController: CBPeripheralDelegate {
       case 6: return "Foot"
       default:
         return "Reserved for future use"
+    }
+  }
+  private func heartRate(from characteristic: CBCharacteristic) -> Int {
+    guard let characteristicData = characteristic.value else { return -1 }
+    let byteArray = [UInt8](characteristicData)
+
+    let firstBitValue = byteArray[0] & 0x01
+    if firstBitValue == 0 {
+      // Heart Rate Value Format is in the 2nd byte
+      return Int(byteArray[1])
+    } else {
+      // Heart Rate Value Format is in the 2nd and 3rd bytes
+      return (Int(byteArray[1]) << 8) + Int(byteArray[2])
     }
   }
 }
