@@ -47,8 +47,22 @@ extension HRMViewController: CBCentralManagerDelegate{
                       advertisementData: [String: Any], rssi RSSI: NSNumber) {
     print(peripheral)
     heartRatePeripheral = peripheral
+    heartRatePeripheral.delegate = self
     centralManager.stopScan()
+    centralManager.connect(heartRatePeripheral)
   }
+  func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
+    print("Connected!")
+    heartRatePeripheral.discoverServices(nil)
+  }
+}
 
-  
+extension HRMViewController: CBPeripheralDelegate {
+  func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
+    guard let services = peripheral.services else { return }
+    
+    for service in services {
+      print(service)
+    }
+  }
 }
