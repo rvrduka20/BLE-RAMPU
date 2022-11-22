@@ -2,6 +2,8 @@
 import UIKit
 import CoreBluetooth
 let heartRateServiceCBUUID = CBUUID(string: "0x180D")
+let heartRateMeasurementCharacteristicCBUUID = CBUUID(string: "2A37")
+let bodySensorLocationCharacteristicCBUUID = CBUUID(string: "2A38")
 
 class HRMViewController: UIViewController {
 
@@ -72,6 +74,41 @@ extension HRMViewController: CBPeripheralDelegate {
 
     for characteristic in characteristics {
       print(characteristic)
+      if characteristic.properties.contains(.read) {
+        print("\(characteristic.uuid): properties contains .read")
+        peripheral.readValue(for: characteristic)
+      }
+      if characteristic.properties.contains(.notify) {
+        print("\(characteristic.uuid): properties contains .notify")
+      }
+    }
+  }
+  
+  func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic,
+                  error: Error?) {
+    switch characteristic.uuid {
+      case bodySensorLocationCharacteristicCBUUID:
+        let bodySensorLocation = bodyLocation(from: characteristic)
+        bodySensorLocationLabel.text = bodySensorLocation
+      default:
+        print("Unhandled Characteristic UUID: \(characteristic.uuid)")
+    }
+  }
+
+  private func bodyLocation(from characteristic: CBCharacteristic) -> String {
+    guard let characteristicData = characteristic.value,
+      let byte = characteristicData.first else { return "Error" }
+
+    switch byte {
+      case 0: return "Other"
+      case 1: return "Chest"
+      case 2: return "Wrist"
+      case 3: return "Finger"
+      case 4: return "Hand"
+      case 5: return "Ear Lobe"
+      case 6: return "Foot"
+      default:
+        return "Reserved for future use"
     }
   }
 }
