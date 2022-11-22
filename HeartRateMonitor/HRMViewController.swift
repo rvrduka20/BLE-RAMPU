@@ -8,6 +8,7 @@ class HRMViewController: UIViewController {
   @IBOutlet weak var heartRateLabel: UILabel!
   @IBOutlet weak var bodySensorLocationLabel: UILabel!
   var centralManager: CBCentralManager!
+  var heartRatePeripheral: CBPeripheral!
 
   override func viewDidLoad() {
     centralManager = CBCentralManager(delegate: self, queue: nil)
@@ -45,6 +46,8 @@ extension HRMViewController: CBCentralManagerDelegate{
   func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral,
                       advertisementData: [String: Any], rssi RSSI: NSNumber) {
     print(peripheral)
+    heartRatePeripheral = peripheral
+    centralManager.stopScan()
   }
 
   
