@@ -1,6 +1,7 @@
 
 import UIKit
 import CoreBluetooth
+let heartRateServiceCBUUID = CBUUID(string: "0x180D")
 
 class HRMViewController: UIViewController {
 
@@ -38,7 +39,7 @@ extension HRMViewController: CBCentralManagerDelegate{
         print("central.state is .poweredOff")
       case .poweredOn:
         print("central.state is .poweredOn")
-        centralManager.scanForPeripherals(withServices: nil)
+        centralManager.scanForPeripherals(withServices: [heartRateServiceCBUUID])
     }
   }
   func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral,
