@@ -10,6 +10,7 @@ class HRMViewController: UIViewController {
 
   override func viewDidLoad() {
     centralManager = CBCentralManager(delegate: self, queue: nil)
+    
     super.viewDidLoad()
 
     // Make the digits monospaces to avoid shifting when the numbers change
@@ -37,8 +38,13 @@ extension HRMViewController: CBCentralManagerDelegate{
         print("central.state is .poweredOff")
       case .poweredOn:
         print("central.state is .poweredOn")
+        centralManager.scanForPeripherals(withServices: nil)
     }
   }
-  
+  func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral,
+                      advertisementData: [String: Any], rssi RSSI: NSNumber) {
+    print(peripheral)
+  }
+
   
 }
